@@ -9,6 +9,10 @@ type Config struct {
 	Bot struct {
 		Token string
 	}
+	RethinkDB struct {
+		Address string
+		Database string
+	}
 }
 
 var config Config
@@ -18,7 +22,7 @@ var readed bool = false
 func Read() {
 	err := gcfg.ReadFileInto(&config, "accountant.gcfg")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err.Error())
 	}
 }
 
