@@ -3,18 +3,20 @@ package main
 import(
 	"./bot"
 	"./config"
+	//"./db"
 	"github.com/Syfaro/telegram-bot-api"
 )
 
 func main() {
 	config.Read()
+	//db.Connect()
 
-	r := bot.NewCommandRouter()
+	r := bot.NewRegexRouter()
 
-	r.AddRoute("/about", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
-		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, "HW!"))
+	r.AddRoute("%[A-Za-z0-9_+=#$@]+ [+\\-]?[0-9]+", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
+		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, cmd.Part(1)))
 	})
 
-	bot.RunWithRouter(r)
+	bot.RunWithHandler(r.Handler())
 
 }

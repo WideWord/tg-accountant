@@ -1,8 +1,9 @@
 package db
 
 import(
-	rethink "github.com/dancannon/gorethink"
+	r "github.com/dancannon/gorethink"
 	"../config"
+	"log"
 )
 
 var Session *r.Session
@@ -14,6 +15,7 @@ func Connect() {
 	    MaxIdle: 10,
 	    MaxOpen: 10,
 	})
+	Session = session
 	if err != nil {
 	    log.Fatalln(err.Error())
 	}

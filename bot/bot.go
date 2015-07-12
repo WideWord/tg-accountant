@@ -6,7 +6,7 @@ import(
 	"log"
 )
 
-func RunWithRouter(router *CommandRouter) {
+func RunWithHandler(handler CommandHandler) {
 	bot, err := tgbotapi.NewBotAPI(config.Get().Bot.Token)
 
 	if err != nil {
@@ -22,6 +22,6 @@ func RunWithRouter(router *CommandRouter) {
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 		cmd := ParseCommand(update.Message.Text)
-		router.Handle(bot, update, cmd)
+		handler(bot, update, cmd)
 	}
 }
