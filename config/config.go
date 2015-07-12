@@ -9,9 +9,9 @@ type Config struct {
 	Bot struct {
 		Token string
 	}
-	RethinkDB struct {
-		Address string
-		Database string
+	Redis struct {
+		Host string
+		Password string
 	}
 }
 
