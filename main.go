@@ -78,7 +78,7 @@ func main() {
 	})
 
 	r.AddRoute("/about", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
-		
+		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, "/d [name] [money] - добавить долг\n/s [name] [money] - установить долг\n/a - список должников"))
 	})
 
 	bot.RunWithHandler(r.Handler())
