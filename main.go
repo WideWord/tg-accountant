@@ -15,11 +15,11 @@ func main() {
 	config.Read()
 	db.Connect()
 
-	r := bot.NewRegexRouter()
+	r := bot.NewCommandRouter()
 
-	r.AddRoute("%[A-Za-z0-9_+=#$@]+ [+\\-]?[0-9]+", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
+	r.AddRoute("/d", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
 		user := update.Message.From.ID
-		debtor := cmd.Part(0)[1:]
+		debtor := cmd.Part(0)
 		change, err := strconv.ParseFloat(cmd.Part(1), 64)
 
 		if err != nil {
@@ -39,10 +39,10 @@ func main() {
 		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Новый долг %v - %.2f", debtor, newDebt)))
 	})
 
-	r.AddRoute("%[A-Za-z0-9_+=#$@]+ =[+\\-]?[0-9]+", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
+	r.AddRoute("/s", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
 		user := update.Message.From.ID
-		debtor := cmd.Part(0)[1:]
-		newDebt, err := strconv.ParseFloat(cmd.Part(1)[1:], 64)
+		debtor := cmd.Part(0)
+		newDebt, err := strconv.ParseFloat(cmd.Part(1), 64)
 
 		if err != nil {
 			log.Println(err.Error())
@@ -59,6 +59,26 @@ func main() {
 		}
 
 		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Новый долг %v - %.2f", debtor, newDebt)))
+	})
+
+	r.AddRoute("/a", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
+		user := update.Message.From.ID
+		res, err := accountant.UserDebtors(strconv.FormatInt(int64(user), 10))
+
+		if err != nil {
+			log.Println(err.Error())
+			bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, "Произошла ошибка"))
+			return
+		}
+
+		bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, "Вам должны:"))
+		for debtor, debt := range res {
+			bot.SendMessage(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Долг %v - %.2f", debtor, debt)))
+		}
+	})
+
+	r.AddRoute("/about", func(bot *tgbotapi.BotAPI, update tgbotapi.Update, cmd bot.Command) {
+		
 	})
 
 	bot.RunWithHandler(r.Handler())
